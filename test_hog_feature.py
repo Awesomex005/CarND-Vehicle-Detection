@@ -7,12 +7,13 @@ from skimage.feature import hog
 from extract_feature import *
 
 # Read in our vehicles
-car_images = glob.glob('./hog_test_imgs/*/*/*.jpeg')
+car_images = glob.glob('./train_data/*/*/*.png')
+#car_images = glob.glob('./hog_test_imgs/*/*/*.jpeg')
 
 # Generate a random index to look at a car image
 ind = np.random.randint(0, len(car_images))
 print("img ind: {}".format(ind))
-ind=1775
+ind=17433
 # Read in the image
 image = mpimg.imread(car_images[ind])
 print("img min pixel value: {}".format(np.min(image)))
@@ -23,8 +24,8 @@ ch3 = image[:,:,2]
 #gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
 orient= 9
-pix_per_cell= 6
-cell_per_block= 3
+pix_per_cell= 8
+cell_per_block= 2
 
 # Call our function with vis=True to see an image output
 features1, hog_image1 = get_hog_features(ch1, orient=orient, 

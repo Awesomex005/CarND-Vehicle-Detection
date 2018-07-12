@@ -11,19 +11,17 @@ from extract_feature import *
 # for scikit-learn >= 0.18 use:
 # from sklearn.model_selection import train_test_split
 from sklearn.cross_validation import train_test_split
+import pickle
 
 print("\n\n")
 
 # Read in cars and notcars
-images = glob.glob('./hog_test_imgs/*/*/*.jpeg')
-cars = []
-notcars = []
-for image in images:
-    if 'image' in image or 'extra' in image:
-        notcars.append(image)
-    else:
-        cars.append(image)
-        
+
+#cars = glob.glob('./train_data/vehicles/*/*.png'); train_data_tpye = 'png'
+#notcars = glob.glob('./train_data/non-vehicles/*/*.png')
+cars = glob.glob('./hog_test_imgs/vehicles_smallset/*/*.jpeg'); train_data_tpye = 'jpeg'
+notcars = glob.glob('./hog_test_imgs/non-vehicles_smallset/*/*.jpeg')
+
 # Reduce the sample size because
 # The quiz evaluator times out after 13s of CPU time
 sample_size = None
@@ -44,14 +42,15 @@ hog_feat = True # HOG features on or off
 y_start_stop = [None, None] # Min and max in y to search in slide_window()
 
 t = time.time()
-
-car_features = extract_features(cars, color_space=color_space, 
+print("start extract car_features")
+car_features = extract_features(cars, train_data_tpye, color_space=color_space, 
                         spatial_size=spatial_size, hist_bins=hist_bins, 
                         orient=orient, pix_per_cell=pix_per_cell, 
                         cell_per_block=cell_per_block, 
                         hog_channel=hog_channel, spatial_feat=spatial_feat, 
                         hist_feat=hist_feat, hog_feat=hog_feat)
-notcar_features = extract_features(notcars, color_space=color_space, 
+print("start extract notcar_features")
+notcar_features = extract_features(notcars, train_data_tpye, color_space=color_space, 
                         spatial_size=spatial_size, hist_bins=hist_bins, 
                         orient=orient, pix_per_cell=pix_per_cell, 
                         cell_per_block=cell_per_block, 
@@ -72,7 +71,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 t2 = time.time()
 print(round(t2-t, 2), 'Seconds to extract features SVC...')
     
-print("Train samples: {} \nTest samples: {}".format(len(y_train), len(y_test)))
+print("X_train shape: {} \nTest samples: {}".format(X_train.shape, len(y_test)))
     
 # Fit a per-column scaler
 X_scaler = StandardScaler().fit(X_train)
@@ -94,3 +93,24 @@ print(round(t2-t, 2), 'Seconds to train SVC...')
 print('Test Accuracy of SVC = ', round(svc.score(X_test, y_test), 4))
 # Check the prediction time for a single sample
 t=time.time()
+
+# pickle classifier
+pickle_file = 'svc_acc_%f.p'%round(svc.score(X_test, y_test), 4)
+try:
+    with open(pickle_file, 'wb') as pfile:
+        pickle.dump(
+                {
+                    'svc': svc,
+                    'scaler': X_scaler,
+                    'orient': orient,
+                    'pix_per_cell': pix_per_cell,
+                    'cell_per_block': cell_per_block,
+                    'spatial_size': spatial_size,
+                    'hist_bins': hist_bins,
+                    'spatial_feat': spatial_feat,
+                    'hist_feat': hist_feat,
+                },
+                pfile, pickle.HIGHEST_PROTOCOL)
+except Exception as e:
+    print('Unable to save data to', pickle_file, ':', e)
+    raise
