@@ -17,10 +17,8 @@ print("\n\n")
 
 # Read in cars and notcars
 
-#cars = glob.glob('./train_data/vehicles/*/*.png'); train_data_tpye = 'png'
-#notcars = glob.glob('./train_data/non-vehicles/*/*.png')
-cars = glob.glob('./hog_test_imgs/vehicles_smallset/*/*.jpeg'); train_data_tpye = 'jpeg'
-notcars = glob.glob('./hog_test_imgs/non-vehicles_smallset/*/*.jpeg')
+cars = glob.glob('./train_data/vehicles/*/*.png'); train_data_tpye = 'png'; notcars = glob.glob('./train_data/non-vehicles/*/*.png')
+#cars = glob.glob('./hog_test_imgs/vehicles_smallset/*/*.jpeg'); train_data_tpye = 'jpeg'; #notcars = glob.glob('./hog_test_imgs/non-vehicles_smallset/*/*.jpeg')
 
 # Reduce the sample size because
 # The quiz evaluator times out after 13s of CPU time
@@ -71,7 +69,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 t2 = time.time()
 print(round(t2-t, 2), 'Seconds to extract features SVC...')
     
-print("X_train shape: {} \nTest samples: {}".format(X_train.shape, len(y_test)))
+print("X_train shape: {} \X_test shape: {}".format(X_train.shape, X_test.shape))
     
 # Fit a per-column scaler
 X_scaler = StandardScaler().fit(X_train)

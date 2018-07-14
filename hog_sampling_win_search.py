@@ -5,7 +5,7 @@ import pickle
 import cv2
 from extract_feature import *
 
-pickle_file='svc_acc_0.982800.p'
+pickle_file='svc_acc_0.975200.p'
 # load a pe-trained svc model from a serialized (pickle) file
 dist_pickle = pickle.load( open(pickle_file, "rb" ) )
 
@@ -20,7 +20,7 @@ hist_bins = dist_pickle["hist_bins"]
 spatial_feat = dist_pickle["spatial_feat"]
 hist_feat = dist_pickle["hist_feat"]
 
-test_image = "test_images/test6.jpg"
+test_image = "test_images/test1.jpg"
 img = mpimg.imread(test_image)
 
 # Define a single function that can extract features using hog sub-sampling and make predictions
@@ -105,7 +105,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     
 ystart = 350
 ystop = 656
-scale = 1.3
+scale = 1.5
     
 out_img = find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_feat, spatial_size, hist_feat, hist_bins)
 cv2.rectangle(out_img,(0, ystart),(out_img.shape[1],ystop),(0,255,0),6)
