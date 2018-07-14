@@ -16,7 +16,7 @@ def get_hog_features(img, orient, pix_per_cell, cell_per_block, vis=False,
     return_list = hog(img, orientations=orient, pixels_per_cell=(pix_per_cell, pix_per_cell),
                                   cells_per_block=(cell_per_block, cell_per_block),
                                   block_norm= 'L2-Hys', transform_sqrt=False, 
-                                  visualise= vis, feature_vector= feature_vec)
+                                  visualize= vis, feature_vector= feature_vec)
     if vis:
         hog_features = return_list[0]
         hog_image = return_list[1]
@@ -71,8 +71,10 @@ def extract_features(imgs, train_data_tpye, color_space='RGB', spatial_size=(32,
                 feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV)
             elif color_space == 'YCrCb':
                 feature_image = cv2.cvtColor(image, cv2.COLOR_RGB2YCrCb)
-        else: feature_image = np.copy(image)      
-
+        else: 
+            feature_image = np.copy(image)      
+            #print("extract RGB features")
+            
         if hog_feat == True:
         # Call get_hog_features() with vis=False, feature_vec=True
             if hog_channel == 'ALL':
