@@ -11,7 +11,7 @@ cars = glob.glob('./train_data/vehicles/*/*.png')
 notcars = glob.glob('./train_data/non-vehicles/*/*.png')
 cars = glob.glob('./hog_test_imgs/vehicles_smallset/*/*.jpeg')
 notcars = glob.glob('./hog_test_imgs/non-vehicles_smallset/*/*.jpeg')
-        
+
 # Define a function to return some characteristics of the dataset 
 def data_look(car_list, notcar_list):
     data_dict = {}

@@ -13,10 +13,8 @@ from extract_feature import *
 from sklearn.cross_validation import train_test_split
 import pickle
 
-print("\n\n")
 
 # Read in cars and notcars
-
 cars = glob.glob('./train_data/vehicles/*/*.png'); train_data_tpye = 'png'; notcars = glob.glob('./train_data/non-vehicles/*/*.png')
 #cars = glob.glob('./hog_test_imgs/vehicles_smallset/*/*.jpeg'); train_data_tpye = 'jpeg'; #notcars = glob.glob('./hog_test_imgs/non-vehicles_smallset/*/*.jpeg')
 
@@ -26,7 +24,6 @@ sample_size = None
 cars = cars[0:sample_size]
 notcars = notcars[0:sample_size]
 
-### TODO: Tweak these parameters and see how the results change.
 color_space = 'YCrCb' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
 orient = 9  # HOG orientations
 pix_per_cell = 8 # HOG pixels per cell
