@@ -12,6 +12,15 @@ from post_process import *
 from hog_sampling_win_search import *
 
 
+class Vehicle():
+    def __init__(self):
+        self.detected = False   # was the Vehicle detected in the last iteration
+        self.n_detections = 0 # number of times times this vehicle has been detected
+        self.n_nondections = 0
+        #self.
+    
+    
+    
 verbose = False
 pickle_file='svc_acc_0.983400.p'
 # load a pe-trained svc model from a serialized (pickle) file
@@ -29,12 +38,21 @@ hist_bins = dist_pickle["hist_bins"]
 spatial_feat = dist_pickle["spatial_feat"]
 hist_feat = dist_pickle["hist_feat"]
 
+frame_cnt = 0
+n_frame_mask = 5
+bboxes_over_frame = []
+valid_bboxes = []
+
 def FIND_CARS_PIPELINE(img):
+    global frame_cnt
+    global bboxes_over_frame
+    global valid_bboxes
+    frame_cnt += 1
     out_img = img.copy()
     ystart = 380 # 350
-    ystop = 656
+    ystop = 636
     #scales = [1.0, 1.5, 2.0]
-    scales = [1.0, 1.5]
+    scales = [1.0, 1.5, 1.8]
     
     bboxes = []
     for scale in scales:
@@ -43,18 +61,33 @@ def FIND_CARS_PIPELINE(img):
             bboxes.append(boxes)
     if bboxes:
         bboxes = np.vstack(bboxes)
-    else:
-        return out_img
+
     heat = np.zeros_like(img[:,:,0]).astype(np.float)
     heat = add_heat(heat, bboxes)
     # Apply threshold to help remove false positives
     heat = apply_threshold(heat, 3)
     heatmap = np.clip(heat, 0, 255)
     labels = label(heatmap)
-    
-    labeled_bboxes = find_labeled_bboxes(labels)
-    out_img = draw_boxes(out_img, labeled_bboxes)
-    
+    bboxes = find_labeled_bboxes(labels)
+
+    if bboxes:
+        bboxes_over_frame.append(bboxes)
+    if 0 == frame_cnt % n_frame_mask:
+        print("frame_cnt: {}".format(frame_cnt))
+        if bboxes_over_frame:
+            bboxes_over_frame = np.vstack(bboxes_over_frame)
+            heat = np.zeros_like(img[:,:,0]).astype(np.float)
+            heat = add_heat(heat, bboxes_over_frame)
+            # Apply threshold to help remove false positives
+            heat = apply_threshold(heat, n_frame_mask-1)
+            heatmap = np.clip(heat, 0, 255)
+            labels = label(heatmap)
+            valid_bboxes = find_labeled_bboxes(labels)
+            valid_bboxes = filter_bbox_by_size(valid_bboxes)
+            print("valid_bboxes: {}".format(valid_bboxes))
+        bboxes_over_frame = []
+        
+    out_img = draw_boxes(out_img, valid_bboxes)
     return out_img
 
 from moviepy.editor import VideoFileClip
@@ -67,7 +100,7 @@ def process_image(image):
     result = FIND_CARS_PIPELINE(image)
     return result
 
-prj_output = 'output_videos/project_videoII.mp4'
+prj_output = 'output_videos/project_videoV.mp4'
 
 if __name__ == "__main__":
     if verbose:
@@ -81,7 +114,7 @@ if __name__ == "__main__":
         print("hist_feat : {}".format(hist_feat))
 
     #clip_v = VideoFileClip("test_video.mp4")
-    clip_v = VideoFileClip("project_video.mp4").subclip(21,50)
+    clip_v = VideoFileClip("project_video.mp4").subclip(27,30)#.subclip(14,16)#.subclip(27,30)#.subclip(12,20)#.subclip(14,16)#
     clip = clip_v.fl_image(process_image)
     t=time.time()    
     clip.write_videofile(prj_output, audio=False)

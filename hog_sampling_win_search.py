@@ -145,8 +145,8 @@ if __name__ == "__main__":
         out_img = img.copy()
 
         ystart = 380 # 350
-        ystop = 656
-        scales = [1.0, 1.5, 2.0]
+        ystop = 636
+        scales = [1.0, 1.5]#, 2.0]
         
         bboxes = []
         for scale in scales:

@@ -8,6 +8,7 @@ from auto_subplot import *
 from post_process import *
 from hog_sampling_win_search import *
 from scipy.ndimage.measurements import label 
+import time
 
 import glob
 from random import shuffle
@@ -51,11 +52,12 @@ if __name__ == "__main__":
         out_img = img.copy()
 
         ystart = 380 # 350
-        ystop = 656
+        ystop = 636
         #scales = [1.0, 1.5, 2.0]
-        scales = [1.0, 1.5]
+        scales = [1.0, 1.2, 1.5, 1.8]
         #scales = [1.4, 1.5]
         
+        t = time.time()
         bboxes = []
         for scale in scales:
             boxes = pre_find_cars(img, color_space, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_feat, spatial_size, hist_feat, hist_bins)
@@ -63,7 +65,9 @@ if __name__ == "__main__":
                 bboxes.append(boxes)
         if bboxes:
             bboxes = np.vstack(bboxes)
-                
+        t2 = time.time()
+        print(round(t2-t, 2), 'Seconds to process img...')
+        
         heat = np.zeros_like(img[:,:,0]).astype(np.float)
         heat = add_heat(heat, bboxes)
         # Apply threshold to help remove false positives

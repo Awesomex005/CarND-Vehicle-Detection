@@ -4,6 +4,23 @@ import numpy as np
 import cv2
 from scipy.ndimage.measurements import label
 
+
+def filter_bbox_by_size(bbox_list):
+    # the vehicle should have a relatively larger appearance if the car is close to us
+    valid_bboxes = []
+    threshold_size = 96*96
+    minimum_size = 20*20
+    for bbox in bbox_list:
+        square = (bbox[1][0]-bbox[0][0])*(bbox[1][1]-bbox[0][1])
+        if square < minimum_size:
+            continue
+        if bbox[1][1] > 550:
+            if square > threshold_size:
+                valid_bboxes.append(bbox)
+        else:
+            valid_bboxes.append(bbox)
+    return valid_bboxes
+    
 # Define a function to draw bounding boxes
 def draw_boxes(img, bboxes, color=(0, 0, 255), thick=6):
     # Make a copy of the image
@@ -44,3 +61,4 @@ def find_labeled_bboxes(labels):
         box = ((np.min(nonzerox), np.min(nonzeroy)), (np.max(nonzerox), np.max(nonzeroy)))
         boxes.append(box)
     return boxes
+
