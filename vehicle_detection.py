@@ -22,7 +22,7 @@ class Vehicle():
     
     
 verbose = False
-pickle_file='svc_acc_0.983400.p'
+pickle_file='svc_acc_0.994400.p'
 # load a pe-trained svc model from a serialized (pickle) file
 dist_pickle = pickle.load( open(pickle_file, "rb" ) )
 
@@ -49,10 +49,11 @@ def FIND_CARS_PIPELINE(img):
     global valid_bboxes
     frame_cnt += 1
     out_img = img.copy()
-    ystart = 380 # 350
-    ystop = 636
+    ystart = 386
+    ystop = 642
     #scales = [1.0, 1.5, 2.0]
-    scales = [1.0, 1.5, 1.8]
+    scales = [1.4, 1.5]
+    #scales = [1.2, 1.4, 1.6]
     
     bboxes = []
     for scale in scales:
@@ -65,21 +66,23 @@ def FIND_CARS_PIPELINE(img):
     heat = np.zeros_like(img[:,:,0]).astype(np.float)
     heat = add_heat(heat, bboxes)
     # Apply threshold to help remove false positives
-    heat = apply_threshold(heat, 3)
+    heat = apply_threshold(heat, 2)
     heatmap = np.clip(heat, 0, 255)
     labels = label(heatmap)
     bboxes = find_labeled_bboxes(labels)
 
+    # filter false positives over frames
     if bboxes:
         bboxes_over_frame.append(bboxes)
     if 0 == frame_cnt % n_frame_mask:
         print("frame_cnt: {}".format(frame_cnt))
         if bboxes_over_frame:
             bboxes_over_frame = np.vstack(bboxes_over_frame)
+            print("bboxes_over_frame: {}".format(bboxes_over_frame))
             heat = np.zeros_like(img[:,:,0]).astype(np.float)
             heat = add_heat(heat, bboxes_over_frame)
             # Apply threshold to help remove false positives
-            heat = apply_threshold(heat, n_frame_mask-1)
+            heat = apply_threshold(heat, int(n_frame_mask*0.6))
             heatmap = np.clip(heat, 0, 255)
             labels = label(heatmap)
             valid_bboxes = find_labeled_bboxes(labels)
@@ -100,7 +103,7 @@ def process_image(image):
     result = FIND_CARS_PIPELINE(image)
     return result
 
-prj_output = 'output_videos/project_videoV.mp4'
+prj_output = 'output_videos/project_videoVIII.mp4'
 
 if __name__ == "__main__":
     if verbose:
@@ -114,7 +117,7 @@ if __name__ == "__main__":
         print("hist_feat : {}".format(hist_feat))
 
     #clip_v = VideoFileClip("test_video.mp4")
-    clip_v = VideoFileClip("project_video.mp4").subclip(27,30)#.subclip(14,16)#.subclip(27,30)#.subclip(12,20)#.subclip(14,16)#
+    clip_v = VideoFileClip("project_video.mp4")#.subclip(14,16)#.subclip(27,32)#.subclip(14,16)#.subclip(27,30)#.subclip(12,20)#.subclip(14,16)#
     clip = clip_v.fl_image(process_image)
     t=time.time()    
     clip.write_videofile(prj_output, audio=False)

@@ -15,7 +15,7 @@ from random import shuffle
 
 if __name__ == "__main__":
     verbose = False
-    pickle_file='svc_acc_0.983400.p'
+    pickle_file='svc_acc_0.994400.p'
     # load a pe-trained svc model from a serialized (pickle) file
     dist_pickle = pickle.load( open(pickle_file, "rb" ) )
 
@@ -51,10 +51,10 @@ if __name__ == "__main__":
         img = mpimg.imread(image_name)
         out_img = img.copy()
 
-        ystart = 380 # 350
-        ystop = 636
+        ystart = 386
+        ystop = 642
         #scales = [1.0, 1.5, 2.0]
-        scales = [1.0, 1.2, 1.5, 1.8]
+        scales = [1.2, 1.4]
         #scales = [1.4, 1.5]
         
         t = time.time()
@@ -76,7 +76,10 @@ if __name__ == "__main__":
         labels = label(heatmap)
         
         labeled_bboxes = find_labeled_bboxes(labels)
-        out_img = draw_boxes(out_img, labeled_bboxes)
+        out_img = draw_boxes(out_img, labeled_bboxes, color=(0, 255, 0))
+        out_img = draw_boxes(out_img, bboxes)
+        cv2.rectangle(out_img,(0, ystart),(out_img.shape[1],ystop),(0,255,0),6)
+        cv2.rectangle(out_img,(0, ystart),(out_img.shape[1],550),(0,255,0),6)
 
         out_img_names.append(image_name)
         out_imgs.append(out_img)

@@ -54,8 +54,8 @@ def pre_find_cars(img, color_space, ystart, ystop, scale, svc, X_scaler, orient,
     
     # Compute individual channel HOG features for the entire image
     hog1 = get_hog_features(ch1, orient, pix_per_cell, cell_per_block, feature_vec=False)
-    #hog2 = get_hog_features(ch2, orient, pix_per_cell, cell_per_block, feature_vec=False)
-    #hog3 = get_hog_features(ch3, orient, pix_per_cell, cell_per_block, feature_vec=False)
+    hog2 = get_hog_features(ch2, orient, pix_per_cell, cell_per_block, feature_vec=False)
+    hog3 = get_hog_features(ch3, orient, pix_per_cell, cell_per_block, feature_vec=False)
     
     boxes = []
     for xb in range(nxsteps):
@@ -65,10 +65,11 @@ def pre_find_cars(img, color_space, ystart, ystop, scale, svc, X_scaler, orient,
             xpos = xb*cells_per_step
             # Extract HOG for this patch
             hog_feat1 = hog1[ypos:ypos+nblocks_per_window, xpos:xpos+nblocks_per_window].ravel() 
-            #hog_feat2 = hog2[ypos:ypos+nblocks_per_window, xpos:xpos+nblocks_per_window].ravel() 
-            #hog_feat3 = hog3[ypos:ypos+nblocks_per_window, xpos:xpos+nblocks_per_window].ravel() 
-            #hog_features = np.hstack((hog_feat1, hog_feat2, hog_feat3))
-            features.append(hog_feat1)
+            hog_feat2 = hog2[ypos:ypos+nblocks_per_window, xpos:xpos+nblocks_per_window].ravel() 
+            hog_feat3 = hog3[ypos:ypos+nblocks_per_window, xpos:xpos+nblocks_per_window].ravel() 
+            hog_features = np.hstack((hog_feat1, hog_feat2, hog_feat3))
+            features.append(hog_features)
+            #features.append(hog_feat1)
             #print("hog_features shape: {}".format(hog_feat1.shape))
 
             xleft = xpos*pix_per_cell

@@ -9,7 +9,7 @@ def filter_bbox_by_size(bbox_list):
     # the vehicle should have a relatively larger appearance if the car is close to us
     valid_bboxes = []
     threshold_size = 96*96
-    minimum_size = 20*20
+    minimum_size = 50*50
     for bbox in bbox_list:
         square = (bbox[1][0]-bbox[0][0])*(bbox[1][1]-bbox[0][1])
         if square < minimum_size:
@@ -44,7 +44,7 @@ def add_heat(heatmap, bbox_list):
     
 def apply_threshold(heatmap, threshold):
     # Zero out pixels below the threshold
-    heatmap[heatmap <= threshold] = 0
+    heatmap[heatmap < threshold] = 0
     # Return thresholded map
     return heatmap
     
