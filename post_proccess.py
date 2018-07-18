@@ -6,7 +6,7 @@ from scipy.ndimage.measurements import label
 
 
 def filter_bbox_by_size(bbox_list):
-    # the vehicle should have a relatively larger appearance if the car is close to us
+    # the vehicle should have a relatively larger appearance if it is close to us
     valid_bboxes = []
     threshold_size = 96*96
     minimum_size = 50*50
@@ -15,37 +15,28 @@ def filter_bbox_by_size(bbox_list):
         if square < minimum_size:
             continue
         if bbox[1][1] > 550:
+            # the vehicle is close to us
             if square > threshold_size:
                 valid_bboxes.append(bbox)
         else:
             valid_bboxes.append(bbox)
     return valid_bboxes
     
-# Define a function to draw bounding boxes
 def draw_boxes(img, bboxes, color=(0, 0, 255), thick=6):
-    # Make a copy of the image
     imcopy = np.copy(img)
-    # Iterate through the bounding boxes
     for bbox in bboxes:
-        # Draw a rectangle given bbox coordinates
         cv2.rectangle(imcopy, (bbox[0][0],bbox[0][1]), (bbox[1][0],bbox[1][1]), color, thick)
-    # Return the image copy with boxes drawn
     return imcopy
 
 def add_heat(heatmap, bbox_list):
-    # Iterate through list of bboxes
     for box in bbox_list:
         # Add += 1 for all pixels inside each bbox
         # Assuming each "box" takes the form ((x1, y1), (x2, y2))
         heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
-
-    # Return updated heatmap
     return heatmap
     
 def apply_threshold(heatmap, threshold):
-    # Zero out pixels below the threshold
     heatmap[heatmap < threshold] = 0
-    # Return thresholded map
     return heatmap
     
 def find_labeled_bboxes(labels):

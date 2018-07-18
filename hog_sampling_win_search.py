@@ -5,12 +5,12 @@ import pickle
 import cv2
 from extract_feature import *
 from auto_subplot import *
-from post_process import *
+from post_proccess import *
 import glob
 from random import shuffle
 
 
-# Define a single function that can extract features using hog sub-sampling and make predictions
+# Extract features using hog sub-sampling and make predictions
 ''' The input img must be jpg/jpeg & RGB color space '''
 def pre_find_cars(img, color_space, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_feat, spatial_size, hist_feat, hist_bins):
     img = img.astype(np.float32)
@@ -48,7 +48,7 @@ def pre_find_cars(img, color_space, ystart, ystop, scale, svc, X_scaler, orient,
     # 64 was the orginal sampling rate, with 8 cells and 8 pix per cell
     window = 64
     nblocks_per_window = (window // pix_per_cell) - cell_per_block + 1
-    cells_per_step = 2  # Instead of overlap, define how many cells to step
+    cells_per_step = 2  # Instead of overlap, define how many cells to step, whcih means 75% overlap.
     nxsteps = (nxblocks - nblocks_per_window) // cells_per_step + 1
     nysteps = (nyblocks - nblocks_per_window) // cells_per_step + 1
     
@@ -88,16 +88,15 @@ def pre_find_cars(img, color_space, ystart, ystop, scale, svc, X_scaler, orient,
                 features.append(hist_features)
                 #print("hist_features shape: {}".format(hist_features.shape))
 
-            # Scale features and make a prediction
+            # concatenate all three type of features
             features = np.concatenate(features).astype(np.float64)
             #print("features shape: {}".format(features.shape))
             test_features = X_scaler.transform([features])
             #print("test_features shape: {}".format(test_features.shape))            
-            #test_features = X_scaler.transform(np.hstack((spatial_features, hist_features, hog_features)).reshape(1, -1)) 
-            #test_features = X_scaler.transform(np.hstack((shape_feat, hist_feat)).reshape(1, -1))    
-            test_prediction = svc.predict(test_features)
+            prediction = svc.predict(test_features)
             
-            if test_prediction == 1:
+            if prediction == 1:
+                # scale back to normal size
                 xbox_left = np.int(xleft*scale)
                 ytop_draw = np.int(ytop*scale)
                 win_draw = np.int(window*scale)
@@ -110,7 +109,6 @@ def pre_find_cars(img, color_space, ystart, ystop, scale, svc, X_scaler, orient,
 if __name__ == "__main__":
     verbose = False
     pickle_file='svc_acc_0.983400.p'
-    # load a pe-trained svc model from a serialized (pickle) file
     dist_pickle = pickle.load( open(pickle_file, "rb" ) )
 
     # get attributes of our svc object
@@ -137,7 +135,6 @@ if __name__ == "__main__":
 
     images = glob.glob('./test_images/*.jpg')
     shuffle(images)
-    #images = ["test_images/test11.jpg"]
     out_img_names = []
     out_imgs = []
     out_img_camps = []

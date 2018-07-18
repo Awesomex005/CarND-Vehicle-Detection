@@ -5,7 +5,7 @@ import pickle
 import cv2
 from extract_feature import *
 from auto_subplot import *
-from post_process import *
+from post_proccess import *
 from hog_sampling_win_search import *
 from scipy.ndimage.measurements import label 
 import time
@@ -16,7 +16,6 @@ from random import shuffle
 if __name__ == "__main__":
     verbose = False
     pickle_file='svc_acc_0.994400.p'
-    # load a pe-trained svc model from a serialized (pickle) file
     dist_pickle = pickle.load( open(pickle_file, "rb" ) )
 
     # get attributes of our svc object
@@ -43,7 +42,6 @@ if __name__ == "__main__":
 
     images = glob.glob('./test_images/*.jpg')
     shuffle(images)
-    #images = ["test_images/test11.jpg"]
     out_img_names = []
     out_imgs = []
     out_img_camps = []

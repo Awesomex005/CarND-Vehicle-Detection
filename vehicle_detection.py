@@ -8,22 +8,13 @@ from scipy.ndimage.measurements import label
 
 from extract_feature import *
 from auto_subplot import *
-from post_process import *
+from post_proccess import *
 from hog_sampling_win_search import *
 
-
-class Vehicle():
-    def __init__(self):
-        self.detected = False   # was the Vehicle detected in the last iteration
-        self.n_detections = 0 # number of times times this vehicle has been detected
-        self.n_nondections = 0
-        #self.
-    
-    
     
 verbose = False
 pickle_file='svc_acc_0.994400.p'
-# load a pe-trained svc model from a serialized (pickle) file
+# load the pe-trained svc model
 dist_pickle = pickle.load( open(pickle_file, "rb" ) )
 
 # get attributes of our svc object
@@ -38,9 +29,13 @@ hist_bins = dist_pickle["hist_bins"]
 spatial_feat = dist_pickle["spatial_feat"]
 hist_feat = dist_pickle["hist_feat"]
 
+# how many frames were processed
 frame_cnt = 0
+# how many frames we take it as a car/non-car determine iteration
 n_frame_mask = 5
+# positives we found over last n_frame_mask frame
 bboxes_over_frame = []
+# high confidence positives
 valid_bboxes = []
 
 def FIND_CARS_PIPELINE(img):
@@ -51,10 +46,9 @@ def FIND_CARS_PIPELINE(img):
     out_img = img.copy()
     ystart = 386
     ystop = 642
-    #scales = [1.0, 1.5, 2.0]
     scales = [1.4, 1.5]
-    #scales = [1.2, 1.4, 1.6]
-    
+
+    ''' Collect positives from different scale window search.  '''
     bboxes = []
     for scale in scales:
         boxes = pre_find_cars(img, color_space, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_feat, spatial_size, hist_feat, hist_bins)
@@ -71,9 +65,10 @@ def FIND_CARS_PIPELINE(img):
     labels = label(heatmap)
     bboxes = find_labeled_bboxes(labels)
 
-    # filter false positives over frames
+    ''' filter out false positives over frames '''
     if bboxes:
         bboxes_over_frame.append(bboxes)
+    # each n_frame_mask frames an iteration
     if 0 == frame_cnt % n_frame_mask:
         print("frame_cnt: {}".format(frame_cnt))
         if bboxes_over_frame:
@@ -86,6 +81,7 @@ def FIND_CARS_PIPELINE(img):
             heatmap = np.clip(heat, 0, 255)
             labels = label(heatmap)
             valid_bboxes = find_labeled_bboxes(labels)
+            # filter out false positives those who is with unreasonable appearence size
             valid_bboxes = filter_bbox_by_size(valid_bboxes)
             print("valid_bboxes: {}".format(valid_bboxes))
         bboxes_over_frame = []
@@ -97,13 +93,11 @@ from moviepy.editor import VideoFileClip
 from IPython.display import HTML
 
 def process_image(image):
-    # NOTE: The output you return should be a color image (3 channel) for processing video below
-    # TODO: put your pipeline here,
     # you should return the final output (image where lines are drawn on lanes)
     result = FIND_CARS_PIPELINE(image)
     return result
 
-prj_output = 'output_videos/project_videoVIII.mp4'
+prj_output = 'output_videos/Vehicle_detection.mp4'
 
 if __name__ == "__main__":
     if verbose:

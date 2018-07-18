@@ -17,9 +17,6 @@ import pickle
 # Read in cars and notcars
 cars = glob.glob('./train_data/vehicles/*/*.png'); train_data_tpye = 'png'; notcars = glob.glob('./train_data/non-vehicles/*/*.png')
 #cars = glob.glob('./hog_test_imgs/vehicles_smallset/*/*.jpeg'); train_data_tpye = 'jpeg'; #notcars = glob.glob('./hog_test_imgs/non-vehicles_smallset/*/*.jpeg')
-
-# Reduce the sample size because
-# The quiz evaluator times out after 13s of CPU time
 sample_size = None
 cars = cars[0:sample_size]
 notcars = notcars[0:sample_size]
@@ -52,7 +49,6 @@ notcar_features = extract_features(notcars, train_data_tpye, color_space=color_s
                         hog_channel=hog_channel, spatial_feat=spatial_feat, 
                         hist_feat=hist_feat, hog_feat=hog_feat)
                         
-# Create an array stack of feature vectors
 X = np.vstack((car_features, notcar_features)).astype(np.float64)
 
 # Define the labels vector
@@ -79,17 +75,15 @@ print('Using:',orient,'orientations',pix_per_cell,
 print('Feature vector length:', len(X_train[0]))
 # Use a linear SVC 
 svc = LinearSVC()
-# Check the training time for the SVC
 t=time.time()
 svc.fit(X_train, y_train)
 t2 = time.time()
 print(round(t2-t, 2), 'Seconds to train SVC...')
+
 # Check the score of the SVC
 print('Test Accuracy of SVC = ', round(svc.score(X_test, y_test), 4))
-# Check the prediction time for a single sample
-t=time.time()
 
-# pickle classifier
+# pickle SVC
 pickle_file = 'svc_acc_%f.p'%round(svc.score(X_test, y_test), 4)
 try:
     with open(pickle_file, 'wb') as pfile:
