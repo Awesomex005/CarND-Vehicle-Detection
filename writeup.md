@@ -18,7 +18,6 @@ Mine steps of completing this project:
 [video1]: https://raw.githubusercontent.com/Awesomex005/CarND-Vehicle-Detection/master/output_videos/Vehicle_detection.mp4
 
 
-# Feature Extraction
 ### Histogram of Oriented Gradients (HOG)
 
 #### 1. extracted HOG features from the training images.
@@ -47,6 +46,8 @@ The code for this step is contained in `train_classifier.py`.
 
 I trained a linear SVM using sclared combined features, HOG features combining with binned color feature and histograms of color feature.
 
+---
+
 ### Sliding Window Search
 
 #### 1. Sliding window
@@ -58,6 +59,7 @@ I decided to search on 1.4 & 1.5 scales with 75% overlap. A relativly high scale
 Ultimately I got a nice result.  Here are some example images:
 
 ![alt text][image3]
+
 ---
 
 ### Video Implementation
