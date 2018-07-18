@@ -5,7 +5,7 @@ import pickle
 import cv2
 from extract_feature import *
 from auto_subplot import *
-from post_proccess import *
+from post_process import *
 import glob
 from random import shuffle
 
@@ -108,7 +108,7 @@ def pre_find_cars(img, color_space, ystart, ystop, scale, svc, X_scaler, orient,
 
 if __name__ == "__main__":
     verbose = False
-    pickle_file='svc_acc_0.983400.p'
+    pickle_file='svc_acc_0.994400.p'
     dist_pickle = pickle.load( open(pickle_file, "rb" ) )
 
     # get attributes of our svc object
@@ -142,9 +142,9 @@ if __name__ == "__main__":
         img = mpimg.imread(image_name)
         out_img = img.copy()
 
-        ystart = 380 # 350
-        ystop = 636
-        scales = [1.0, 1.5]#, 2.0]
+        ystart = 386
+        ystop = 642
+        scales = [1.5]#[1.4, 1.5]
         
         bboxes = []
         for scale in scales:
@@ -157,8 +157,8 @@ if __name__ == "__main__":
 
         out_img = draw_boxes(out_img, bboxes)
         
-        cv2.rectangle(out_img,(0, ystart),(out_img.shape[1],ystop),(0,255,0),6)
-        cv2.rectangle(out_img,(0, 0),(int(64*scale),int(64*scale)),(0,255,0),6)
+        #cv2.rectangle(out_img,(0, ystart),(out_img.shape[1],ystop),(0,255,0),6)
+        #cv2.rectangle(out_img,(0, 0),(int(64*scale),int(64*scale)),(0,255,0),6)
 
         out_img_names.append(image_name)
         out_imgs.append(out_img)

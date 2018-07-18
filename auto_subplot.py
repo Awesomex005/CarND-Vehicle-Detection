@@ -11,10 +11,9 @@ def multi_subplot(names, images, cols, cmaps):
     for indx in range(cnt):
         plt.subplot(rows, cols, indx+1)
         plt.imshow(images[indx], cmap=cmaps[indx])
-        plt.title(names[indx], fontsize=5)
-        plt.tick_params(labelsize=2)
+        plt.title(names[indx], fontsize=8)
+        plt.tick_params(labelsize=4)
     #fig.tight_layout()
     #fig.tight_layout(pad=0.4, w_pad=0.5, h_pad=0.5)
-    plt.subplots_adjust(left=0.01, bottom=0.01, right=0.99, top=0.99,
-                wspace=0.01, hspace=0.02)
+    plt.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.95, wspace=0.1, hspace=0.3)
     plt.show()

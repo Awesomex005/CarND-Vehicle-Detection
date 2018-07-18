@@ -8,7 +8,7 @@ from scipy.ndimage.measurements import label
 
 from extract_feature import *
 from auto_subplot import *
-from post_proccess import *
+from post_process import *
 from hog_sampling_win_search import *
 
     

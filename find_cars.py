@@ -5,7 +5,7 @@ import pickle
 import cv2
 from extract_feature import *
 from auto_subplot import *
-from post_proccess import *
+from post_process import *
 from hog_sampling_win_search import *
 from scipy.ndimage.measurements import label 
 import time
@@ -45,15 +45,14 @@ if __name__ == "__main__":
     out_img_names = []
     out_imgs = []
     out_img_camps = []
-    for image_name in images[:]:
+    for image_name in images[:4]:
         img = mpimg.imread(image_name)
         out_img = img.copy()
+        out_img2 = img.copy()
 
         ystart = 386
         ystop = 642
-        #scales = [1.0, 1.5, 2.0]
-        scales = [1.2, 1.4]
-        #scales = [1.4, 1.5]
+        scales = [1.4, 1.5]
         
         t = time.time()
         bboxes = []
@@ -74,10 +73,11 @@ if __name__ == "__main__":
         labels = label(heatmap)
         
         labeled_bboxes = find_labeled_bboxes(labels)
-        out_img = draw_boxes(out_img, labeled_bboxes, color=(0, 255, 0))
+        #out_img = draw_boxes(out_img, labeled_bboxes, color=(0, 255, 0))
         out_img = draw_boxes(out_img, bboxes)
-        cv2.rectangle(out_img,(0, ystart),(out_img.shape[1],ystop),(0,255,0),6)
-        cv2.rectangle(out_img,(0, ystart),(out_img.shape[1],550),(0,255,0),6)
+        #cv2.rectangle(out_img,(0, ystart),(out_img.shape[1],ystop),(0,255,0),6)
+        #cv2.rectangle(out_img,(0, ystart),(out_img.shape[1],550),(0,255,0),6)
+        out_img2 = draw_boxes(out_img2, labeled_bboxes, color=(0, 0, 255))
 
         out_img_names.append(image_name)
         out_imgs.append(out_img)
@@ -85,5 +85,11 @@ if __name__ == "__main__":
         out_img_names.append(image_name)
         out_imgs.append(heatmap)
         out_img_camps.append('hot')
+        out_img_names.append(image_name)
+        out_imgs.append(labels[0])
+        out_img_camps.append('gray')
+        out_img_names.append(image_name)
+        out_imgs.append(out_img2)
+        out_img_camps.append(None)
 
-    multi_subplot(out_img_names, out_imgs, 6, out_img_camps)
+    multi_subplot(out_img_names, out_imgs, 4, out_img_camps)
