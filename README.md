@@ -1,5 +1,5 @@
 
-#Vehicle Detection#
+# Vehicle Detection #
 
 Mine steps of completing this project:
 
@@ -91,10 +91,10 @@ The relative code is contained in 72 through 87 lines of `vehicle_detection.py`.
 
 ### Discussion
 
-** Problems **
+**Problems**
 
 The bounding boxes on the detected vehicle is wobbly, and it is not tightly match to the shape of the vehicle, especially when two cars get close.
 
-** Probable Solution **
+**Passible Solution**
 
 I think I could constructe a Vehicle object for each detected car and track the bounding boxes of cars. When I am confident one car is real(detected over serveral filter cycle), I could start to extract the car's histograms of color information (especially H channel of HLV) and record it. With that I could finally more percisely draw out the bounding box of a car even two cars get close or overlap(ideally two car with different color).
